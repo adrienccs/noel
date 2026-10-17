@@ -6,24 +6,26 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#173b2c">
 <title>Ton tirage de Noël</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-:root{--bg:#173b2c;--bg2:#0f2a1f;--fg:#f4f8f5;--muted:#a9c2b5;--berry:#e23a55;--gold:#f2c35b;--pink:#ffd9df;
+:root{--bg:#173b2c;--bg2:#0f2a1f;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.16);--fg:#f4f8f5;--muted:#a9c2b5;--berry:#e23a55;--gold:#f2c35b;--pink:#ffd9df;--ok:#7fd1a8;
   --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;--body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:dark}
 *{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:radial-gradient(120% 80% at 50% 0%,var(--bg) 0%,var(--bg2) 100%);color:var(--fg);font-family:var(--body);line-height:1.5;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;
-  padding:calc(24px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
+html{min-height:100%;background:var(--bg2)}
+body{margin:0;min-height:100vh;min-height:100dvh;background:radial-gradient(120% 80% at 50% 0%,var(--bg) 0%,var(--bg2) 100%) fixed;color:var(--fg);font-family:var(--body);line-height:1.5;
+  display:flex;flex-direction:column;align-items:center;text-align:center;overflow-x:hidden;
+  padding:calc(24px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(32px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
 [hidden]{display:none!important}
-canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
-main{position:relative;z-index:1;max-width:460px;width:100%;display:flex;flex-direction:column;align-items:center;gap:18px}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+main{position:relative;z-index:1;max-width:460px;width:100%;display:flex;flex-direction:column;align-items:center;gap:18px;margin:auto 0}
 .eyebrow{letter-spacing:.14em;text-transform:uppercase;font-size:.78rem;color:var(--muted);font-weight:600}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,11vw,3.6rem);line-height:1;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:800;font-size:1.25rem;margin:0;text-align:left}
 p{margin:0;color:var(--muted);max-width:34ch}
+.stack{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
 .gift{width:170px;height:170px;position:relative;cursor:pointer;border:0;background:none;padding:0;margin:8px 0}
 .gift .box{position:absolute;left:12px;right:12px;bottom:0;height:110px;background:var(--berry);border-radius:10px}
-.gift .lid{position:absolute;left:0;right:0;top:34px;height:34px;background:#c92a45;border-radius:10px;transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
+.gift .lid{position:absolute;left:0;right:0;top:34px;height:34px;background:#c92a45;border-radius:10px}
 .gift .rv{position:absolute;left:50%;width:22px;margin-left:-11px;top:34px;bottom:0;background:var(--gold)}
 .gift .bow{position:absolute;left:50%;top:4px;width:72px;height:34px;margin-left:-36px}
 .gift .bow:before,.gift .bow:after{content:"";position:absolute;top:0;width:34px;height:30px;border:7px solid var(--gold);border-radius:50% 50% 50% 0}
@@ -31,27 +33,40 @@ p{margin:0;color:var(--muted);max-width:34ch}
 .gift .lidwrap{position:absolute;inset:0;transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
 .gift:hover .lidwrap{transform:translateY(-4px) rotate(-2deg)}
 .gift.open .lidwrap{transform:translateY(-70px) rotate(-18deg);opacity:0;transition:transform .6s,opacity .6s .2s}
-.gift:focus-visible{outline:3px solid var(--gold);outline-offset:8px;border-radius:12px}
+.gift:focus-visible,.btn:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
 @media (prefers-reduced-motion:no-preference){.gift:not(.open){animation:wiggle 2.6s ease-in-out infinite}
  @keyframes wiggle{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-5deg)}90%{transform:rotate(5deg)}95%{transform:rotate(-3deg)}}
  .name{animation:pop .6s cubic-bezier(.2,1.6,.4,1)}@keyframes pop{from{transform:scale(.5);opacity:0}}}
-.btn{font:inherit;font-weight:700;border:0;border-radius:999px;padding:14px 26px;background:var(--fg);color:var(--bg2);cursor:pointer}
+.btn{font:inherit;font-weight:700;border:0;border-radius:999px;padding:13px 24px;background:var(--fg);color:var(--bg2);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:default}
 .name{font-family:var(--display);font-weight:800;font-size:clamp(3rem,16vw,5.5rem);line-height:1;color:var(--pink);text-wrap:balance;word-break:break-word}
 .facts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.fact{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;font-weight:600}
+.fact{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:600}
 .small{font-size:.85rem}
+.card{width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;text-align:left;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.card p{max-width:none}
+.ideas{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ideas li{background:rgba(255,255,255,.07);border-radius:10px;padding:10px 12px;overflow-wrap:anywhere}
+.ideas li a{color:var(--gold)}
+.meta{font-size:.78rem;color:var(--muted)}
+textarea{font:inherit;color:var(--fg);background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;padding:12px;width:100%;min-height:140px;resize:vertical}
+textarea::placeholder{color:var(--muted)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.status{font-size:.85rem;font-weight:600;color:var(--muted)}
+.status.ok{color:var(--ok)}.status.ko{color:var(--pink)}
 </style>
 </head>
 <body>
 <canvas id="snow"></canvas>
 <main>
-  <div id="bad" hidden>
+  <div id="bad" class="stack" hidden>
     <div class="eyebrow">Tirage de Noël</div>
-    <h1 style="margin-top:12px">Lien incomplet</h1>
-    <p style="margin-top:12px">Ce lien ne contient pas de tirage. Ouvre le lien exact reçu par SMS, en entier.</p>
+    <h1>Lien incomplet</h1>
+    <p>Ce lien ne contient pas de tirage. Ouvre le lien exact reçu par SMS, en entier.</p>
   </div>
 
-  <div id="closed" hidden style="display:flex;flex-direction:column;align-items:center;gap:16px">
+  <div id="closed" class="stack" hidden>
     <div class="eyebrow" id="fam">Tirage de Noël</div>
     <h1 id="hello">Salut !</h1>
     <p>Vérifie que personne ne regarde ton écran, puis ouvre le paquet.</p>
@@ -59,15 +74,32 @@ p{margin:0;color:var(--muted);max-width:34ch}
     <button class="btn" id="openBtn">Ouvrir mon cadeau</button>
   </div>
 
-  <div id="opened" hidden style="display:flex;flex-direction:column;align-items:center;gap:16px">
+  <div id="opened" class="stack" hidden>
     <div class="eyebrow">Tu offres un cadeau à</div>
     <div class="name" id="who"></div>
     <div class="facts" id="facts"></div>
-    <p class="small">Chut, c'est secret ! Garde ce SMS pour retrouver le prénom si tu oublies.</p>
+    <p class="small">Chut, c'est secret ! Garde ce lien : il te servira à revenir voir ses idées.</p>
+
+    <section class="card" id="theirCard" hidden>
+      <h2 id="theirTitle">Ses idées</h2>
+      <div id="theirBody"><p>Chargement…</p></div>
+      <div class="row"><button class="btn ghost" id="refresh">Actualiser</button><span class="meta" id="theirMeta"></span></div>
+    </section>
+
+    <section class="card" id="mineCard" hidden>
+      <h2>Ta liste d'idées</h2>
+      <p class="small">Une idée par ligne. Tu peux coller des liens. La personne qui t'a tiré au sort la verra sur sa page.</p>
+      <label for="mine" class="small" style="position:absolute;left:-9999px">Ta liste d'idées</label>
+      <textarea id="mine" maxlength="2000" placeholder="Un livre de cuisine&#10;Des chaussettes rigolotes&#10;https://…"></textarea>
+      <div class="row"><button class="btn" id="save">Enregistrer ma liste</button><span class="status" id="saveStatus"></span></div>
+    </section>
   </div>
 </main>
 
 <script>
+/* Adresse du stockage des listes (Google Apps Script). Vide = listes désactivées. */
+const API="";
+
 /* Décodage du lien : sel 4 octets + XOR avec un flux pseudo-aléatoire (anti-curieux). */
 function stream(salt){let s=(((salt[0]<<24)|(salt[1]<<16)|(salt[2]<<8)|salt[3])^0x9E3779B9)>>>0||1;
   return ()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s&255}}
@@ -77,37 +109,93 @@ function decode(tok){const raw=b64urlDecode(tok);if(raw.length<6)throw 0;
   const salt=raw.slice(0,4),next=stream(salt),body=raw.slice(4).map(b=>b^next());
   const a=JSON.parse(new TextDecoder().decode(body));
   if(!Array.isArray(a)||a[0]!==1||!a[1]||!a[2])throw 0;
-  return {g:a[1],r:a[2],b:a[3]||"",d:a[4]||"",f:a[5]||""}}
+  return {g:a[1],r:a[2],b:a[3]||"",d:a[4]||"",f:a[5]||"",k:a[6]||""}}
 
+const $=id=>document.getElementById(id);
 let data=null;
 try{data=decode(location.hash.slice(1))}catch(e){}
-const $=id=>document.getElementById(id);
+
+/* ---------- Listes d'idées ---------- */
+async function apiGet(name){
+  const u=API+"?action=get&f="+encodeURIComponent(data.f)+"&n="+encodeURIComponent(name);
+  const r=await fetch(u);const j=await r.json();if(!j.ok)throw new Error(j.error||"erreur");return j;
+}
+async function apiSave(text){
+  const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({action:"save",f:data.f,n:data.g,k:data.k,ideas:text})});
+  const j=await r.json();if(!j.ok)throw new Error(j.error||"erreur");return j;
+}
+function when(iso){if(!iso)return "";const d=new Date(iso);
+  return "Mise à jour le "+d.toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+" à "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}
+function renderIdeas(text){
+  const box=$("theirBody");box.textContent="";
+  const lines=String(text||"").split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  if(!lines.length){const p=document.createElement("p");p.textContent=data.r+" n'a pas encore écrit d'idées. Reviens plus tard sur ce lien.";box.appendChild(p);return}
+  const ul=document.createElement("ul");ul.className="ideas";
+  for(const line of lines){
+    const li=document.createElement("li");
+    line.split(/(https?:\/\/[^\s]+)/g).forEach(part=>{
+      if(/^https?:\/\//.test(part)){const a=document.createElement("a");a.href=part;a.target="_blank";a.rel="noopener noreferrer";
+        try{a.textContent=new URL(part).hostname.replace(/^www\./,"")+" ↗"}catch(e){a.textContent=part}li.appendChild(a)}
+      else if(part)li.appendChild(document.createTextNode(part));
+    });
+    ul.appendChild(li);
+  }
+  box.appendChild(ul);
+}
+async function loadTheirs(){
+  $("theirBody").innerHTML="<p>Chargement…</p>";$("theirMeta").textContent="";
+  try{const j=await apiGet(data.r);renderIdeas(j.ideas);$("theirMeta").textContent=when(j.updated)}
+  catch(e){$("theirBody").innerHTML="";const p=document.createElement("p");p.textContent="Impossible de charger les idées pour le moment. Réessaie avec « Actualiser ».";$("theirBody").appendChild(p)}
+}
+async function loadMine(){
+  try{const j=await apiGet(data.g);if(!$("mine").value)$("mine").value=j.ideas||"";
+    if(j.updated){$("saveStatus").textContent=when(j.updated)}}
+  catch(e){}
+}
+function setupIdeas(){
+  if(!API)return;
+  $("theirCard").hidden=false;$("theirTitle").textContent="Les idées de "+data.r;
+  $("refresh").onclick=loadTheirs;loadTheirs();
+  if(data.k){
+    $("mineCard").hidden=false;loadMine();
+    $("save").onclick=async()=>{
+      const b=$("save"),s=$("saveStatus");b.disabled=true;s.className="status";s.textContent="Enregistrement…";
+      try{await apiSave($("mine").value);s.className="status ok";s.textContent="Liste enregistrée"}
+      catch(e){s.className="status ko";s.textContent=e.message&&e.message!=="erreur"?e.message:"Échec de l'enregistrement, réessaie."}
+      b.disabled=false;
+    };
+  }
+}
+
+/* ---------- Révélation ---------- */
 if(!data){$("bad").hidden=false}
 else{
   $("closed").hidden=false;
   $("hello").textContent="Salut "+data.g+" !";
   if(data.f)$("fam").textContent="Tirage de Noël · "+data.f;
-  const open=()=>{
-    $("gift").classList.add("open");
-    setTimeout(()=>{
-      $("closed").hidden=true;$("opened").hidden=false;$("who").textContent=data.r;
-      const f=$("facts");
-      if(data.b){const s=document.createElement("span");s.className="fact";s.textContent="Budget "+data.b+" €";f.appendChild(s)}
-      if(data.d){const s=document.createElement("span");s.className="fact";s.textContent="Échange le "+data.d;f.appendChild(s)}
-      burst();
-    },450);
+  const show=animate=>{
+    $("closed").hidden=true;$("opened").hidden=false;$("who").textContent=data.r;
+    const f=$("facts");f.textContent="";
+    if(data.b){const s=document.createElement("span");s.className="fact";s.textContent="Budget "+data.b+" €";f.appendChild(s)}
+    if(data.d){const s=document.createElement("span");s.className="fact";s.textContent="Échange le "+data.d;f.appendChild(s)}
+    try{sessionStorage.setItem("opened:"+location.hash,"1")}catch(e){}
+    setupIdeas();
+    if(animate)burst();
   };
-  $("gift").onclick=open;$("openBtn").onclick=open;
+  let already=false;try{already=sessionStorage.getItem("opened:"+location.hash)==="1"}catch(e){}
+  if(already)show(false);
+  else{const open=()=>{$("gift").classList.add("open");setTimeout(()=>show(true),450)};$("gift").onclick=open;$("openBtn").onclick=open}
 }
 
-/* Neige + confettis */
+/* ---------- Neige + confettis ---------- */
 const cv=$("snow"),cx=cv.getContext("2d");let W,H,flakes=[],conf=[];
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 function size(){W=cv.width=innerWidth*devicePixelRatio;H=cv.height=innerHeight*devicePixelRatio}
 size();addEventListener("resize",size);
 for(let i=0;i<70;i++)flakes.push({x:Math.random(),y:Math.random(),r:1+Math.random()*2.5,v:.0006+Math.random()*.0012,w:Math.random()*6});
 function burst(){if(reduce)return;const c=["#e23a55","#f2c35b","#ffd9df","#ffffff","#7fd1a8"];
-  for(let i=0;i<140;i++)conf.push({x:W/2,y:H*.42,vx:(Math.random()-.5)*16*devicePixelRatio,vy:(-Math.random()*14-4)*devicePixelRatio,c:c[i%5],s:(4+Math.random()*5)*devicePixelRatio,a:Math.random()*6,life:1})}
+  for(let i=0;i<140;i++)conf.push({x:W/2,y:H*.3,vx:(Math.random()-.5)*16*devicePixelRatio,vy:(-Math.random()*14-4)*devicePixelRatio,c:c[i%5],s:(4+Math.random()*5)*devicePixelRatio,a:Math.random()*6,life:1})}
 function tick(t){cx.clearRect(0,0,W,H);cx.fillStyle="rgba(255,255,255,.75)";
   for(const f of flakes){if(!reduce){f.y+=f.v;if(f.y>1.02)f.y=-.02}
     cx.beginPath();cx.arc((f.x+Math.sin(t/2000+f.w)*.01)*W,f.y*H,f.r*devicePixelRatio,0,7);cx.fill()}
