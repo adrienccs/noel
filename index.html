@@ -98,7 +98,7 @@ textarea::placeholder{color:var(--muted)}
 
 <script>
 /* Adresse du stockage des listes (Google Apps Script). Vide = listes désactivées. */
-const API="";
+const API="https://script.google.com/macros/s/AKfycbxKMAyfGR2ZA6qxrUddGpERe-XqOZ6F8TZmnUquI301mQ1d4JzJxjUJ7UGX5Teu1Bl3/exec";
 
 /* Décodage du lien : sel 4 octets + XOR avec un flux pseudo-aléatoire (anti-curieux). */
 function stream(salt){let s=(((salt[0]<<24)|(salt[1]<<16)|(salt[2]<<8)|salt[3])^0x9E3779B9)>>>0||1;
