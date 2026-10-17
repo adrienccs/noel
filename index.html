@@ -207,8 +207,15 @@ async function loadMine(){
     if(j.updated){$("saveStatus").textContent=when(j.updated)}}
   catch(e){}
 }
-function setupIdeas(){
+async function linkKey(){
+  if(data.k)return data.k;
+  try{const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(location.hash.slice(1)));
+    return "h"+Array.from(new Uint8Array(h).slice(0,8),x=>x.toString(16).padStart(2,"0")).join("")}
+  catch(e){return "h"+location.hash.slice(1,17)}
+}
+async function setupIdeas(){
   if(!API)return;
+  data.k=await linkKey();
   $("theirCard").hidden=false;$("theirTitle").textContent="La liste de "+data.r;
   $("refresh").onclick=loadTheirs;loadTheirs();
   if(data.k){
