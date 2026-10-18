@@ -244,6 +244,8 @@ else{
     const f=$("facts");f.textContent="";
     if(data.b){const s=document.createElement("span");s.className="fact";s.textContent="Budget "+data.b+" €";f.appendChild(s)}
     if(data.d){const s=document.createElement("span");s.className="fact";s.textContent="Échange le "+data.d;f.appendChild(s)}
+    let seen=false;try{seen=sessionStorage.getItem("ping:"+location.hash)==="1";sessionStorage.setItem("ping:"+location.hash,"1")}catch(e){}
+    if(API&&!seen){try{fetch(API+"?action=open&f="+encodeURIComponent(data.f)+"&n="+encodeURIComponent(data.g),{mode:"no-cors"}).catch(()=>{})}catch(e){}}
     try{sessionStorage.setItem("opened:"+location.hash,"1")}catch(e){}
     setupIdeas();
     if(animate)burst();
