@@ -166,6 +166,10 @@ function decode(tok){const raw=b64urlDecode(tok);if(raw.length<6)throw 0;
   return {g:a[1],r:a[2],b:a[3]||"",d:a[4]||"",f:a[5]||"",k:a[6]||""}}
 
 const $=id=>document.getElementById(id);
+/* Un autre lien ouvert dans le même onglet : on recharge pour afficher le bon tirage */
+const startHash=location.hash;
+addEventListener("hashchange",()=>location.reload());
+addEventListener("pageshow",e=>{if(e.persisted&&location.hash!==startHash)location.reload()});
 let data=null;
 try{data=decode(location.hash.slice(1))}catch(e){}
 
