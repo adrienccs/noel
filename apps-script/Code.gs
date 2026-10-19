@@ -14,6 +14,7 @@
 
 var SHEET = 'Listes';
 var OPENS = 'Ouvertures';
+var TEL = 'ListesTel'; // listes partagées par numéro de téléphone (empreinte)
 var STATUS_KEY = 'iD7u0KIOMH1PxcZS'; // protège la page de suivi
 var MAX_IDEAS = 2000;
 
@@ -59,6 +60,14 @@ function doGet(e) {
   if (p.action !== 'get') return json_({ ok: false, error: 'action inconnue' });
   var fam = clean_(p.f, 60), name = clean_(p.n, 40);
   if (!name) return json_({ ok: false, error: 'prénom manquant' });
+  var lid = clean_(p.l, 40);
+  if (lid) {
+    var tsh = telSheet_(), trow = findId_(tsh, lid);
+    if (trow > 0) {
+      var t = tsh.getRange(trow, 1, 1, 4).getValues()[0];
+      return json_({ ok: true, ideas: String(t[2] || ''), updated: t[3] ? new Date(t[3]).toISOString() : null });
+    }
+  }
   var sh = sheet_();
   var row = findRow_(sh, fam, name);
   if (row < 0) return json_({ ok: true, ideas: '', updated: null });
@@ -75,12 +84,24 @@ function doPost(e) {
   var ideas = clean_(body.ideas, MAX_IDEAS);
   if (!name || !key) return json_({ ok: false, error: 'lien incomplet' });
 
+  var lid = clean_(body.l, 40);
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
+    var now = new Date();
+    if (lid) {
+      var tsh = telSheet_(), trow = findId_(tsh, lid);
+      if (trow < 0) {
+        tsh.appendRow([lid, name, ideas, now, key]);
+      } else {
+        var tk = String(tsh.getRange(trow, 5).getValue() || '');
+        if (tk && tk !== key) return json_({ ok: false, error: 'Ce lien ne permet pas de modifier cette liste.' });
+        tsh.getRange(trow, 2, 1, 4).setValues([[name, ideas, now, tk || key]]);
+      }
+      return json_({ ok: true, updated: now.toISOString() });
+    }
     var sh = sheet_();
     var row = findRow_(sh, fam, name);
-    var now = new Date();
     if (row < 0) {
       sh.appendRow([fam, name, ideas, now, key]);
     } else {
@@ -94,6 +115,30 @@ function doPost(e) {
   }
 }
 
+
+/* ---------- Listes par téléphone ---------- */
+
+function telSheet_() {
+  var ss = SpreadsheetApp.getActive();
+  var sh = ss.getSheetByName(TEL);
+  if (!sh) {
+    sh = ss.insertSheet(TEL);
+    sh.appendRow(['Empreinte tél.', 'Prénom', 'Idées', 'Mise à jour', 'Clé']);
+    sh.setFrozenRows(1);
+    sh.getRange('A1:E1').setFontWeight('bold');
+    sh.setColumnWidth(3, 420);
+    sh.getRange('C:C').setWrap(true);
+  }
+  return sh;
+}
+
+function findId_(sh, id) {
+  var last = sh.getLastRow();
+  if (last < 2) return -1;
+  var vals = sh.getRange(2, 1, last - 1, 1).getValues();
+  for (var i = 0; i < vals.length; i++) if (String(vals[i][0]) === id) return i + 2;
+  return -1;
+}
 
 /* ---------- Suivi des ouvertures ---------- */
 
@@ -148,7 +193,9 @@ function index_(sh, col) {
 /** Page de suivi : ?action=status&k=CLÉ&d=Famille:Prénom1,Prénom2;Famille2:... */
 function status_(p) {
   if (p.k !== STATUS_KEY) return HtmlService.createHtmlOutput('<p>Accès refusé.</p>');
-  var opens = index_(opensSheet_()), lists = index_(sheet_());
+  var opens = index_(opensSheet_()), lists = index_(sheet_()), tel = {};
+  var tsh = telSheet_(), tl = tsh.getLastRow();
+  if (tl > 1) tsh.getRange(2, 1, tl - 1, 3).getValues().forEach(function (r) { tel[String(r[0])] = r; });
   var fams = String(p.d || '').split(';').filter(String).map(function (chunk) {
     var i = chunk.indexOf(':');
     return { name: chunk.slice(0, i), people: chunk.slice(i + 1).split(',').filter(String) };
@@ -156,9 +203,10 @@ function status_(p) {
   var total = 0, opened = 0, body = '';
   fams.forEach(function (f) {
     var rows = '', o = 0;
-    f.people.forEach(function (n) {
-      var key = (f.name + '|' + n).toLowerCase(), r = opens[key], l = lists[key];
-      var hasList = l && String(l[2]).trim();
+    f.people.forEach(function (entry) {
+      var parts = entry.split('~'), n = parts[0], lid = parts[1] || '';
+      var key = (f.name + '|' + n).toLowerCase(), r = opens[key], l = lists[key], t = lid ? tel[lid] : null;
+      var hasList = (t && String(t[2]).trim()) || (l && String(l[2]).trim());
       if (r) o++;
       rows += '<li class="' + (r ? 'ok' : 'no') + '"><span class="n">' + esc_(n) + '</span>' +
         '<span class="s">' + (r ? 'Ouvert le ' + fmt_(r[2]) + (r[4] > 1 ? ' · ' + r[4] + ' fois' : '') : 'Pas encore ouvert') + '</span>' +

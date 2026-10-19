@@ -163,7 +163,7 @@ function decode(tok){const raw=b64urlDecode(tok);if(raw.length<6)throw 0;
   const salt=raw.slice(0,4),next=stream(salt),body=raw.slice(4).map(b=>b^next());
   const a=JSON.parse(new TextDecoder().decode(body));
   if(!Array.isArray(a)||a[0]!==1||!a[1]||!a[2])throw 0;
-  return {g:a[1],r:a[2],b:a[3]||"",d:a[4]||"",f:a[5]||"",k:a[6]||""}}
+  return {g:a[1],r:a[2],b:a[3]||"",d:a[4]||"",f:a[5]||"",k:a[6]||"",me:a[7]||"",them:a[8]||""}}
 
 const $=id=>document.getElementById(id);
 /* Un autre lien ouvert dans le même onglet : on recharge pour afficher le bon tirage */
@@ -174,13 +174,13 @@ let data=null;
 try{data=decode(location.hash.slice(1))}catch(e){}
 
 /* ---------- Listes d'idées ---------- */
-async function apiGet(name){
-  const u=API+"?action=get&f="+encodeURIComponent(data.f)+"&n="+encodeURIComponent(name);
+async function apiGet(name,lid){
+  const u=API+"?action=get&f="+encodeURIComponent(data.f)+"&n="+encodeURIComponent(name)+(lid?"&l="+encodeURIComponent(lid):"");
   const r=await fetch(u);const j=await r.json();if(!j.ok)throw new Error(j.error||"erreur");return j;
 }
 async function apiSave(text){
   const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify({action:"save",f:data.f,n:data.g,k:data.k,ideas:text})});
+    body:JSON.stringify({action:"save",f:data.f,n:data.g,k:data.k,l:data.me,ideas:text})});
   const j=await r.json();if(!j.ok)throw new Error(j.error||"erreur");return j;
 }
 function when(iso){if(!iso)return "";const d=new Date(iso);
@@ -203,11 +203,11 @@ function renderIdeas(text){
 }
 async function loadTheirs(){
   $("theirBody").innerHTML='<p class="empty">Chargement…</p>';$("theirMeta").textContent="";
-  try{const j=await apiGet(data.r);renderIdeas(j.ideas);$("theirMeta").textContent=when(j.updated)}
+  try{const j=await apiGet(data.r,data.them);renderIdeas(j.ideas);$("theirMeta").textContent=when(j.updated)}
   catch(e){$("theirBody").innerHTML="";const p=document.createElement("p");p.className="empty";p.textContent="Impossible de charger les idées. Réessaie avec « Actualiser ».";$("theirBody").appendChild(p)}
 }
 async function loadMine(){
-  try{const j=await apiGet(data.g);if(!$("mine").value)$("mine").value=j.ideas||"";
+  try{const j=await apiGet(data.g,data.me);if(!$("mine").value)$("mine").value=j.ideas||"";
     if(j.updated){$("saveStatus").textContent=when(j.updated)}}
   catch(e){}
 }
